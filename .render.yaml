@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: spalinda-app
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn app:app
+    rootDir: backend
+    plan: free
+    runtime: python3.10
