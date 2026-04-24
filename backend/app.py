@@ -2,8 +2,8 @@ import os
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 from config import Config
-from backend.models import db
-from backend.routes import register_blueprints
+from models import db
+from routes import register_blueprints
 
 # Absolute path to the frontend directory
 basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
