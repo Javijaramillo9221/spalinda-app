@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from backend.models import db, Client, Appointment, Finance
+from models import db, Client, Appointment, Finance
 from datetime import datetime, date
 from sqlalchemy import func, extract
 

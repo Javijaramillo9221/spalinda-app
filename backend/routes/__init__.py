@@ -1,7 +1,7 @@
-from backend.routes.clients import clients_bp
-from backend.routes.appointments import appointments_bp
-from backend.routes.finances import finances_bp
-from backend.routes.dashboard import dashboard_bp
+from routes.clients import clients_bp
+from routes.appointments import appointments_bp
+from routes.finances import finances_bp
+from routes.dashboard import dashboard_bp
 
 def register_blueprints(app):
     app.register_blueprint(clients_bp, url_prefix='/api/clients')

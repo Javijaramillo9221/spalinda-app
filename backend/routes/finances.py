@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from backend.models import db, Finance
+from models import db, Finance
 from datetime import datetime
 
 finances_bp = Blueprint('finances', __name__)
