@@ -1,7 +1,7 @@
 import os
 from flask import Flask, send_from_directory
 from flask_cors import CORS
-from backend.config import Config
+from config import Config
 from backend.models import db
 from backend.routes import register_blueprints
 
