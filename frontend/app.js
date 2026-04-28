@@ -302,21 +302,27 @@ const app = {
             }
 
             container.innerHTML = this.clients.map(c => `
-                <div class="card">
-                    <div class="card-content">
-                        <div>${c.name}</div>
-                        <div>${c.pet_name}</div>
-                        <a href="https://wa.me/${c.phone.replace(/\D/g, '')}" 
-                            target="_blank" 
-                            class="btn-icon whatsapp">
-                                <i class="ph ph-whatsapp-logo"></i>
-                        </a>
-                    </div>
-                        <button class="btn-icon delete" onclick="app.deleteClient(${c.id})">
-                            <i class="ph ph-trash"></i>
-                        </button>
-                    </div>
-            `).join('');
+    <div class="card">
+        <div class="card-content">
+            <div>${c.name}</div>
+            <div>${c.pet_name}</div>
+
+            <div class="actions">
+                <a href="https://wa.me/${c.phone.replace(/\D/g, '')}" target="_blank" class="btn-icon whatsapp">
+                    <i class="ph ph-whatsapp-logo"></i>
+                </a>
+
+                <button class="btn-icon edit" onclick='app.editarCliente(${JSON.stringify(c)})'>
+                    ✏️
+                </button>
+
+                <button class="btn-icon delete" onclick="app.deleteClient(${c.id})">
+                    🗑️
+                </button>
+            </div>
+        </div>
+    </div>
+`).join('');
 
             const select = document.getElementById('appointment-client');
             select.innerHTML = '<option value="">Seleccionar Cliente...</option>' +
@@ -325,6 +331,18 @@ const app = {
         } catch (error) {
             this.showToast('Error clientes');
         }
+    },
+
+    editarCliente(cliente) {
+        document.getElementById("client-name").value = cliente.name
+        document.getElementById("client-phone").value = cliente.phone
+        document.getElementById("client-pet-name").value = cliente.pet_name
+        document.getElementById("client-pet-type").value = cliente.pet_type
+        document.getElementById("client-pet-details").value = cliente.pet_details
+
+        this.clienteEditando = cliente.id
+
+        this.showModal('modal-client')
     },
 
     async loadAppointments(filter = 'all') {
@@ -496,37 +514,45 @@ const app = {
         const pet_type = document.getElementById('client-pet-type').value;
         const pet_details = document.getElementById('client-pet-details').value;
 
-        try {
-            const res = await fetch(`${API_URL}/clients`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name,
-                    phone,
-                    pet_name,
-                    pet_type,
-                    pet_details
-                })
-            });
+        const data = { name, phone, pet_name, pet_type, pet_details };
 
-            const result = await res.json();
+        try {
+            let res;
+
+            if (this.clienteEditando) {
+                // ✏️ EDITAR
+                res = await fetch(`${API_URL}/clients/${this.clienteEditando}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            } else {
+                // ➕ CREAR
+                res = await fetch(`${API_URL}/clients`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            }
 
             if (!res.ok) {
-                this.showToast(result.error || 'Error al crear cliente');
+                this.showToast('Error al guardar cliente');
                 return;
             }
 
             this.hideModal('modal-client');
             this.loadClients();
             this.loadDashboard();
-            this.showToast('Cliente creado correctamente');
+
+            this.clienteEditando = null;
+
+            this.showToast('Cliente guardado correctamente');
 
         } catch (error) {
-            this.showToast('Error al crear cliente');
+            this.showToast('Error al guardar cliente');
         }
     },
+
     async loadFinances() {
         const res = await fetch(`${API_URL}/finances`);
         const data = await res.json();

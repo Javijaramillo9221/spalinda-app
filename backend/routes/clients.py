@@ -39,3 +39,18 @@ def delete_client(id):
     db.session.delete(client)
     db.session.commit()
     return jsonify({'message': 'Client deleted successfully'})
+
+@clients_bp.route('/<int:id>', methods=['PUT'])
+def update_client(id):
+    client = Client.query.get_or_404(id)
+    data = request.json
+
+    client.name = data['name']
+    client.phone = formatear_telefono(data['phone'])
+    client.pet_name = data['pet_name']
+    client.pet_type = data['pet_type']
+    client.pet_details = data.get('pet_details', '')
+
+    db.session.commit()
+
+    return jsonify(client.to_dict())
